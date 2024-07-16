@@ -1,0 +1,38 @@
+﻿@model List<ListUserPcViewModel>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <table class="table table-hover table-striped table-dark ">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">MachineName</th>
+            <th scope="col">Os</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class = "clickable-row" data-href="@Url.Action("Privacy")">
+                <th scope="row">@item.Id</th>
+                <td>@item.MachineName</td>
+                <td>@item.Os</td>
+            </tr>    
+        }
+        
+        </tbody>
+    </table>
+</div>
+
+@section Scripts
+{<script>
+    $(document).ready(function() {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script> }
