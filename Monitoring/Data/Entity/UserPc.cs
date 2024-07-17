@@ -1,24 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Monitoring.Data.Entity;
 
 [Table("UserPc")]
 public class UserPc
 {
-    public long Id { get; set; }
+    public long? Id { get; set; }
     
-    public long CpuId { get; set; }
+    [JsonPropertyName("Cpu")]
     public Cpu Cpu { get; set; }
     
-    public long MotherBoardId { get; set; }
+    [JsonPropertyName("MotherBoard")]
     public MotherBoard MotherBoard { get; set; }
     
-    public long GpuId { get; set; }
+    [JsonPropertyName("Gpu")]
     public Gpu Gpu { get; set; }
     
-    public long OsId { get; set; }
+    [JsonPropertyName("Os")]
     public OperationSystem Os { get; set; }
 
+    [JsonPropertyName("Storages")]
     public List<Storage> Storages { get; set; } = new();
+    
+    [JsonPropertyName("Rams")]
     public List<Ram> Rams { get; set; } = [];
 }

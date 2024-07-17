@@ -1,0 +1,147 @@
+﻿@model Monitoring.Data.Entity.UserPc
+
+<div class="container">
+    <h2>Details</h2>
+
+    <!-- CPU Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    CPU:
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Name:</strong> @Model.Cpu.Name
+                    </p>
+                    <p>
+                        <strong>Cores:</strong> @Model.Cpu.Cores
+                    </p>
+                    <p>
+                        <strong>Threads:</strong> @Model.Cpu.Threads
+                    </p>
+                    <p>
+                        <strong>Frequency:</strong> @Model.Cpu.Freq
+                    </p>
+                    <p>
+                        <strong>Socket:</strong> @Model.Cpu.Socket
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Motherboard:
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Name:</strong> @Model.MotherBoard.Name
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- GPU Section -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    GPU:
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Name:</strong> @Model.Gpu.Name
+                    </p>
+                    <p>
+                        <strong>Adapter Ram:</strong> @Model.Gpu.AdapterRam
+                    </p>
+                    <p>
+                        <strong>Driver:</strong> @Model.Gpu.Driver
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- OS Section -->
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    OS:
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Caption:</strong> @Model.Os.Caption
+                    </p>
+                    <p>
+                        <strong>Build:</strong> @Model.Os.Build
+                    </p>
+                    <p>
+                        <strong>Architecture:</strong> @Model.Os.OsArchitecture
+                    </p>
+                    <p>
+                        <strong>Machine Name:</strong> @Model.Os.MachineName
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- RAM Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    RAM:
+                </div>
+                @foreach (var ram in Model.Rams)
+                {
+                    <div class="card-body">
+                        <p>
+                            <strong>Name:</strong> @ram.Name
+                        </p>
+                        <p>
+                            <strong>Speed:</strong> @ram.Speed
+                        </p>
+                        <p>
+                            <strong>Capacity:</strong> @ram.Capacity
+                        </p>
+                        <p>
+                            <strong>User PC ID:</strong> @ram.UserPcId
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+        <!-- Storage Section -->
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Storage:
+                </div>
+                @foreach (var storage in Model.Storages)
+                {
+                    <div class="card-body">
+                        <p>
+                            <strong>Name:</strong> @storage.Name
+                        </p>
+                        <p>
+                            <strong>User PC ID:</strong> @storage.UserPcId
+                        </p>
+                        <p>
+                            <strong>Total Size:</strong> @storage.TotalSize
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+</div>

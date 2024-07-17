@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Monitoring.Data;
+using Monitoring.Midleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDbConnection")));
-    
 
+    
 
 var app = builder.Build();
 
@@ -22,6 +23,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseMiddleware<MyMiddleware>();
 
 app.UseRouting();
 
@@ -30,5 +32,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

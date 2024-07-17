@@ -17,13 +17,12 @@
         <tbody>
         @foreach (var item in Model)
         {
-            <tr class = "clickable-row" data-href="@Url.Action("Privacy")">
+            <tr class = "clickable-row"  data-href="@Url.Action("Index","UserPcInfo",new { id = item.Id })">
                 <th scope="row">@item.Id</th>
                 <td>@item.MachineName</td>
                 <td>@item.Os</td>
             </tr>    
         }
-        
         </tbody>
     </table>
 </div>

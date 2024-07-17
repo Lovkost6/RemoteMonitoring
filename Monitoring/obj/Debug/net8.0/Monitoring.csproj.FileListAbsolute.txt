@@ -68,3 +68,4 @@ D:\RiderProjects\Monitoring\Monitoring\bin\Debug\net8.0\runtimes\win\lib\net6.0\
 D:\RiderProjects\Monitoring\Monitoring\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 D:\RiderProjects\Monitoring\Monitoring\obj\Debug\net8.0\Monitoring.csproj.AssemblyReference.cache
 D:\RiderProjects\Monitoring\Monitoring\obj\Debug\net8.0\Monitoring.csproj.Up2Date
+D:\RiderProjects\Monitoring\Monitoring\obj\Debug\net8.0\Monitoring.sourcelink.json
