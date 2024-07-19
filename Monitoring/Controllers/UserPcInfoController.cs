@@ -14,7 +14,7 @@ public class UserPcInfoController : Controller
         _context = context;
     }
 
-    public async Task<IActionResult> Index(long id)
+    public async Task<IActionResult> Index(string id)
     {
         var userInfo = await _context.UserPcs.Include(x => x.Os).Include(x => x.Cpu).Include(x => x.Gpu)
             .Include(x => x.Storages).Include(x => x.Rams).Include(x => x.MotherBoard).

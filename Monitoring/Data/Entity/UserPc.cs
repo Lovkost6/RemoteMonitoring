@@ -6,7 +6,7 @@ namespace Monitoring.Data.Entity;
 [Table("UserPc")]
 public class UserPc
 {
-    public long? Id { get; set; }
+    public string? Id { get; set; }
     
     [JsonPropertyName("Cpu")]
     public Cpu Cpu { get; set; }

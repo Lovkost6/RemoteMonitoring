@@ -11,6 +11,6 @@ public class Ram
     public int Speed { get; set; }
     public int Capacity { get; set; }
     
-    public long UserPcId { get; set; }
+    // public long UserPcId { get; set; }
     public UserPc UserPc { get; set; }
 }

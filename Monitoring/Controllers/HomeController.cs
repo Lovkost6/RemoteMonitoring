@@ -19,7 +19,7 @@ public class HomeController : Controller
     {
         var listUserPcViewModels = _context.UserPcs.Include(x => x.Os).Select(x => new ListUserPcViewModel()
         {
-            Id = (long)x.Id!,
+            Id = x.Id,
             MachineName = x.Os.MachineName,
             Os = x.Os.Caption
         }).ToList();

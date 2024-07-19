@@ -9,7 +9,6 @@
     <table class="table table-hover table-striped table-dark ">
         <thead>
         <tr>
-            <th scope="col">#</th>
             <th scope="col">MachineName</th>
             <th scope="col">Os</th>
         </tr>
@@ -18,7 +17,6 @@
         @foreach (var item in Model)
         {
             <tr class = "clickable-row"  data-href="@Url.Action("Index","UserPcInfo",new { id = item.Id })">
-                <th scope="row">@item.Id</th>
                 <td>@item.MachineName</td>
                 <td>@item.Os</td>
             </tr>    
