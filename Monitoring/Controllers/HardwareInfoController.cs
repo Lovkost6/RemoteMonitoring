@@ -23,11 +23,11 @@ public class HardwareInfoController : ControllerBase
         return Ok(userPc.Id);
     }
 
-    
+
     [HttpGet]
-    public async Task<IActionResult> IsUserExist([FromQuery]string userPcId)
+    public async Task<IActionResult> IsUserExist([FromQuery] string userPcId)
     {
-        var user =  await _context.UserPcs.FirstOrDefaultAsync(x => x.Id == userPcId);
+        var user = await _context.UserPcs.FirstOrDefaultAsync(x => x.Id == userPcId);
         if (user == null)
         {
             return NotFound();

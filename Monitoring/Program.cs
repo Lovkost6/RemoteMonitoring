@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Monitoring.Data;
+using Monitoring.Hub;
 using Monitoring.Midleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDbConnection")));
 
-    
+builder.Services.AddSignalR();    
 
 var app = builder.Build();
 
@@ -33,5 +34,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapHub<PcInfoMonitoringHub>("/monitoring");
 
 app.Run();
