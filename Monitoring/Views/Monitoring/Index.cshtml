@@ -1,0 +1,127 @@
+﻿@model HardWareMonitorService.Entity.Monitoring.ViewModel.UserPcIdViewModel
+
+
+<h2>Real-Time Monitoring</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">
+                CPU:
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Load:</strong>
+                    <span id="cpuRtTotalLoad"></span>
+                </p>
+                <p>
+                    <strong>Temperature:</strong>
+                    <span id="cpuRtTemperature"></span>
+                </p>
+                <p>
+                    <strong>Voltage:</strong>
+                    <span id="cpuRtVoltage"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">
+                Gpu:
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>TotalLoad:</strong>
+                    <span id="gpuRtTotalLoad"></span>
+                </p>
+                <p>
+                    <strong>Temperature:</strong>
+                    <span id="gpuRtTemperature"></span>
+                </p>
+                <p>
+                    <strong>Fan:</strong>
+                    <span id="gpuRtFan"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- GPU Section -->
+        <div class="card mb-3">
+            <div class="card-header">
+                Network:
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Download:</strong>
+                    <span id="networkRtDownload"></span>
+                </p>
+                <p>
+                    <strong>Upload:</strong>
+                    <span id="networkRtUpload"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">
+                RAM:
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Used:</strong>
+                    <span id="ramRtUsed"></span>
+                </p>
+                <p>
+                    <strong>Available:</strong>
+                    <span id="ramRtAvailable"></span>
+                </p>
+                <p>
+                    <strong>Load:</strong>
+                    <span id="ramRtLoad"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.12/signalr.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        const connection = new signalR.HubConnectionBuilder().withUrl("/monitoring").build();
+
+        connection.on("ReceiveMonitoringInfo", function (pcMonitoringInfo) {
+            $('#cpuRtTotalLoad').text(pcMonitoringInfo.cpuRt.totalLoad + " %");
+            $('#cpuRtTemperature').text(pcMonitoringInfo.cpuRt.temperature + " ℃");
+            $('#cpuRtVoltage').text(pcMonitoringInfo.cpuRt.voltage + " V");
+            
+            $('#gpuRtTotalLoad').text(pcMonitoringInfo.gpuRt.totalLoad + " %");
+            $('#gpuRtTemperature').text(pcMonitoringInfo.gpuRt.temperature + " ℃");
+            $('#gpuRtFan').text(pcMonitoringInfo.gpuRt.fan + " RPM");
+            
+            $('#networkRtDownload').text(pcMonitoringInfo.networkRt.download + " Mb");
+            $('#networkRtUpload').text(pcMonitoringInfo.networkRt.upload + " Mb");
+            
+            $('#ramRtUsed').text(pcMonitoringInfo.ramRt.used + " Gb");
+            $('#ramRtAvailable').text(pcMonitoringInfo.ramRt.available + " Gb");
+            $('#ramRtLoad').text(pcMonitoringInfo.ramRt.load + " %");
+        });
+        
+        connection.start().then(function () {
+            connection.invoke("StartMonitoring","@Model.UserPcId")
+            console.log("SignalR connected.");
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+    });
+</script>
+}

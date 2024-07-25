@@ -1,4 +1,5 @@
-﻿@model List<ListUserPcViewModel>
+﻿@using Monitoring.Controllers
+@model List<ListUserPcViewModel>
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -13,16 +14,20 @@
             <th scope="col">MachineName</th>
             <th scope="col">Os</th>
             <th scope="col">Status</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
         @foreach (var item in Model)
         {
-        <tr class="clickable-row" data-href="@Url.Action("Index","UserPcInfo", new { id = item.Id })" data-userpcid="@item.Id">
+            <tr class="clickable-row" data-href="@Url.Action("Index", "UserPcInfo", new { id = item.Id })" data-userpcid="@item.Id">
                 <td>@item.MachineName</td>
                 <td>@item.Os</td>
                 <td class="status">Оффлайн</td>
-            </tr>    
+                <td>
+                    <button class="btn-primary" data-href="@Url.Action("Index", "Monitoring", new { id = item.Id })">Monitoring</button>
+                </td>
+            </tr>
         }
         </tbody>
     </table>
@@ -32,11 +37,19 @@
 
 {<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.18/signalr.min.js"></script>
 
-<script>
+    <script>
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/monitoring")
         .build();
     
+    connection.on("UserOnline",(users)=>{
+        console.log(users);
+        for (let x of  users){
+            console.log(x);
+            const statusElement = document.querySelector(`[data-userpcid='${x}'] .status`);
+            statusElement.textContent ="Онлайн";
+        }
+        });
 
     connection.on("UpdateStatus", (userPcId, isOnline) => {
         const statusElement = document.querySelector(`[data-userpcid='${userPcId}'] .status`);
@@ -45,12 +58,19 @@
         }
     });
 
-    connection.start().catch(err => console.error(err.toString()));
+    connection.start().then(function () { connection.invoke("GetOnlineUser")}).catch(err => console.error(err.toString()));
+    
 </script>
     <script>
     $(document).ready(function() {
         $(".clickable-row").click(function() {
             window.location = $(this).data("href");
         });
+        
+        $(".clickable-row button").click(function(event) {
+            event.stopPropagation();
+            window.location = $(this).data("href");
+        });
     });
+    
 </script> }
