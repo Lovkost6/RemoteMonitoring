@@ -1,9 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Text.Json;
 using HardWareMonitorService.Entity.Monitoring;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Monitoring.Hub;
-
 using Microsoft.AspNetCore.SignalR;
 
 public class PcInfoMonitoringHub : Hub
@@ -16,9 +14,9 @@ public class PcInfoMonitoringHub : Hub
         {
             Console.WriteLine(x);
         }
-        await Clients.Caller.SendAsync("UserOnline",connections.Keys.ToList());
+        await Clients.Caller.SendAsync("UserOnline", connections.Keys.ToList());
     }
-    
+
     public async Task StartMonitoring(string userPcId)
     {
         Console.WriteLine("Мониторинг старт");
@@ -28,22 +26,26 @@ public class PcInfoMonitoringHub : Hub
 
     public async Task StopMonitoring(string userPcId)
     {
+        Console.WriteLine("Мне надо перестать мониторить " + userPcId);
         var connectionId = connections[userPcId];
-        await Clients.Client(connectionId).SendAsync("Stop");
+        
+        Console.WriteLine(connectionId);
+        await Clients.Client(connectionId).SendAsync("SendingStop");
     }
     
-    public async Task Monitoring(PcMonitoringInfo pcMonitoringInfo)
+    public async Task Monitoring(string pcMonitoringInfo)
     {
         Console.WriteLine("Мониторинг пришёл");
-        await Clients.All.SendAsync("ReceiveMonitoringInfo", pcMonitoringInfo);
+        var pcInfoDeserialize = JsonSerializer.Deserialize<PcMonitoringInfo>(pcMonitoringInfo);
+        await Clients.All.SendAsync("ReceiveMonitoringInfo", pcInfoDeserialize);
     }
-    
+
     public async Task Init(string userPcId)
     {
         Console.WriteLine($"Юзер: {userPcId} подключился");
-        
+
         connections.TryAdd(userPcId, Context.ConnectionId);
-        
+
         await Clients.All.SendAsync("UpdateStatus", userPcId, true);
     }
 
@@ -53,7 +55,7 @@ public class PcInfoMonitoringHub : Hub
         Clients.Caller.SendAsync("GetUserPcId");
         return base.OnConnectedAsync();
     }
-    
+
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
@@ -62,7 +64,7 @@ public class PcInfoMonitoringHub : Hub
             connections.Remove(x.Key);
             Clients.All.SendAsync("UpdateStatus", x.Key, false);
         }
-        
+
         Console.WriteLine("Я отключился: " + Context.ConnectionId);
         return base.OnDisconnectedAsync(exception);
     }

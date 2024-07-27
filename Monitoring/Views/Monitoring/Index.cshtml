@@ -3,117 +3,196 @@
 
 <h2>Real-Time Monitoring</h2>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-header">
-                CPU:
-            </div>
-            <div class="card-body">
-                <p>
-                    <strong>Load:</strong>
-                    <span id="cpuRtTotalLoad"></span>
-                </p>
-                <p>
-                    <strong>Temperature:</strong>
-                    <span id="cpuRtTemperature"></span>
-                </p>
-                <p>
-                    <strong>Voltage:</strong>
-                    <span id="cpuRtVoltage"></span>
-                </p>
-            </div>
+<div>
+    <h3>CPU</h3>
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+            <p>
+                <strong>Total Load:</strong> <span id="cpuRtTotalLoad"></span>
+            </p>
+            <canvas id="cpuLoadChart" width="400" height="200"></canvas>
         </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-header">
-                Gpu:
-            </div>
-            <div class="card-body">
-                <p>
-                    <strong>TotalLoad:</strong>
-                    <span id="gpuRtTotalLoad"></span>
-                </p>
-                <p>
-                    <strong>Temperature:</strong>
-                    <span id="gpuRtTemperature"></span>
-                </p>
-                <p>
-                    <strong>Fan:</strong>
-                    <span id="gpuRtFan"></span>
-                </p>
-            </div>
+        <div>
+            <p>
+                <strong>Temperature:</strong> <span id="cpuRtTemperature"></span>
+            </p>
+            <canvas id="cpuTempChart" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <p>
+                <strong>Voltage:</strong> <span id="cpuRtVoltage"></span>
+            </p>
+            <canvas id="cpuVoltageChart" width="400" height="200"></canvas>
         </div>
     </div>
 </div>
 
-
-<div class="row">
-    <div class="col-md-6">
-        <!-- GPU Section -->
-        <div class="card mb-3">
-            <div class="card-header">
-                Network:
-            </div>
-            <div class="card-body">
-                <p>
-                    <strong>Download:</strong>
-                    <span id="networkRtDownload"></span>
-                </p>
-                <p>
-                    <strong>Upload:</strong>
-                    <span id="networkRtUpload"></span>
-                </p>
-            </div>
+<div>
+    <h3>GPU</h3>
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+            <p>
+                <strong>Total Load:</strong> <span id="gpuRtTotalLoad"></span>
+            </p>
+            <canvas id="gpuLoadChart" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <p>
+                <strong>Temperature:</strong> <span id="gpuRtTemperature"></span>
+            </p>
+            <canvas id="gpuTempChart" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <p>
+                <strong>Fan Speed:</strong> <span id="gpuRtFan"></span>
+            </p>
+            <canvas id="gpuFanChart" width="400" height="200"></canvas>
         </div>
     </div>
+</div>
 
+<div>
+    <h3>Network</h3>
+    <div style="display: flex; justify-content: flex-start;">
+        <div>
+            <p>
+                <strong>Download:</strong> <span id="networkRtDownload"></span>
+            </p>
+            <canvas id="networkDownloadChart" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <p>
+                <strong>Upload:</strong> <span id="networkRtUpload"></span>
+            </p>
+            <canvas id="networkUploadChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
 
-    <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-header">
-                RAM:
-            </div>
-            <div class="card-body">
-                <p>
-                    <strong>Used:</strong>
-                    <span id="ramRtUsed"></span>
-                </p>
-                <p>
-                    <strong>Available:</strong>
-                    <span id="ramRtAvailable"></span>
-                </p>
-                <p>
-                    <strong>Load:</strong>
-                    <span id="ramRtLoad"></span>
-                </p>
-            </div>
+<div>
+    <h3>RAM</h3>
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+            <p>
+                <strong>Used:</strong> <span id="ramRtUsed"></span>
+            </p>
+            <canvas id="ramUsedChart" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <p>
+                <strong>Available:</strong> <span id="ramRtAvailable"></span>
+            </p>
+            <canvas id="ramAvailableChart" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <p>
+                <strong>Load:</strong> <span id="ramRtLoad"></span>
+            </p>
+            <canvas id="ramLoadChart" width="400" height="200"></canvas>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.12/signalr.min.js"></script>
     <script type="text/javascript">
     $(document).ready(function () {
+        const chartWidth = 400;
+        const chartHeight = 200;
         const connection = new signalR.HubConnectionBuilder().withUrl("/monitoring").build();
 
+        window.onbeforeunload = function () {
+            connection.invoke("StopMonitoring","@Model.UserPcId")
+        };
+
+        const createChart = (ctx, yMin, yMax,step) => {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [], // метки времени или индексы
+                    datasets: [{
+                        label: 'Value',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        xAxes: {
+                            type: 'linear',
+                            position: 'bottom'
+                        },
+                        yAxes: [{
+                            ticks: {
+                                min: yMin,
+                                max: yMax,
+                                stepSize: step,
+                                beginAtZero: true,
+                                suggestedMin: yMin,
+                                suggestedMax: yMax
+                            }
+                        }]
+                    }
+                }
+            });
+        };
+        
+        const cpuLoadChart = createChart(document.getElementById('cpuLoadChart').getContext('2d'), 0, 100,20 );
+        const cpuTempChart = createChart(document.getElementById('cpuTempChart').getContext('2d'), 0, 100,20);
+        const cpuVoltageChart = createChart(document.getElementById('cpuVoltageChart').getContext('2d'), 0, 2, 0.01);
+        const gpuLoadChart = createChart(document.getElementById('gpuLoadChart').getContext('2d'), 0, 100, 20);
+        const gpuTempChart = createChart(document.getElementById('gpuTempChart').getContext('2d'), 0, 100, 20);
+        const gpuFanChart = createChart(document.getElementById('gpuFanChart').getContext('2d'), 0, 5000, 1250);
+        const networkDownloadChart = createChart(document.getElementById('networkDownloadChart').getContext('2d'), 0, 65, 15);
+        const networkUploadChart = createChart(document.getElementById('networkUploadChart').getContext('2d'), 0, 100, 20);
+        const ramUsedChart = createChart(document.getElementById('ramUsedChart').getContext('2d'), 0, 32, 8);
+        const ramAvailableChart = createChart(document.getElementById('ramAvailableChart').getContext('2d'), 0, 32, 8);
+        const ramLoadChart = createChart(document.getElementById('ramLoadChart').getContext('2d'), 0, 100, 20);
+
+
+
+
+        const updateChart = (chart, label, data) => {
+            chart.data.labels.push(label);
+            chart.data.datasets[0].data.push(data);
+            if (chart.data.labels.length > 10) { // Максимальное количество точек на графике
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+            chart.update();
+        };
+        
         connection.on("ReceiveMonitoringInfo", function (pcMonitoringInfo) {
+            const timeLabel = new Date().toLocaleTimeString();
+
             $('#cpuRtTotalLoad').text(pcMonitoringInfo.cpuRt.totalLoad + " %");
             $('#cpuRtTemperature').text(pcMonitoringInfo.cpuRt.temperature + " ℃");
             $('#cpuRtVoltage').text(pcMonitoringInfo.cpuRt.voltage + " V");
-            
+            updateChart(cpuLoadChart, timeLabel, pcMonitoringInfo.cpuRt.totalLoad);
+            updateChart(cpuTempChart, timeLabel, pcMonitoringInfo.cpuRt.temperature);
+            updateChart(cpuVoltageChart, timeLabel, pcMonitoringInfo.cpuRt.voltage);
+
             $('#gpuRtTotalLoad').text(pcMonitoringInfo.gpuRt.totalLoad + " %");
             $('#gpuRtTemperature').text(pcMonitoringInfo.gpuRt.temperature + " ℃");
             $('#gpuRtFan').text(pcMonitoringInfo.gpuRt.fan + " RPM");
-            
+            updateChart(gpuLoadChart, timeLabel, pcMonitoringInfo.gpuRt.totalLoad);
+            updateChart(gpuTempChart, timeLabel, pcMonitoringInfo.gpuRt.temperature);
+            updateChart(gpuFanChart, timeLabel, pcMonitoringInfo.gpuRt.fan);
+
             $('#networkRtDownload').text(pcMonitoringInfo.networkRt.download + " Mb");
             $('#networkRtUpload').text(pcMonitoringInfo.networkRt.upload + " Mb");
-            
+            updateChart(networkDownloadChart, timeLabel, pcMonitoringInfo.networkRt.download);
+            updateChart(networkUploadChart, timeLabel, pcMonitoringInfo.networkRt.upload);
+
             $('#ramRtUsed').text(pcMonitoringInfo.ramRt.used + " Gb");
             $('#ramRtAvailable').text(pcMonitoringInfo.ramRt.available + " Gb");
             $('#ramRtLoad').text(pcMonitoringInfo.ramRt.load + " %");
+            updateChart(ramUsedChart, timeLabel, pcMonitoringInfo.ramRt.used);
+            updateChart(ramAvailableChart, timeLabel, pcMonitoringInfo.ramRt.available);
+            updateChart(ramLoadChart, timeLabel, pcMonitoringInfo.ramRt.load);
         });
         
         connection.start().then(function () {
@@ -123,5 +202,7 @@
             return console.error(err.toString());
         });
     });
-</script>
+
+    
+    </script>
 }
